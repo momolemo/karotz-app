@@ -1,36 +1,36 @@
 #!/bin/bash
 
 #Pour creation declaration de la variable :
-CNF_DATADIR="../.."
+#CNF_DATADIR="../.."
 
 XMLFILE="${CNF_DATADIR}/Apps/Progtv/Data/xmlfile.xml"
 URLXML="http://www.telez.fr/programmeTv/flux-rss"
 PROGFILE="${CNF_DATADIR}/Apps/Progtv/Data/progfile.txt"
 
-#source /www/cgi-bin/setup.inc
-#source /www/cgi-bin/url.inc
-#source /www/cgi-bin/utils.inc
-#source /www/cgi-bin/tts.inc
+source /www/cgi-bin/setup.inc
+source /www/cgi-bin/url.inc
+source /www/cgi-bin/utils.inc
+source /www/cgi-bin/tts.inc
 
-#KillProcess SOUNDS
+KillProcess SOUNDS
 
-#ReadUrlParam
-#DOLIST=${URLParam[dolist]}
-#LISTECHAINE=${URLParam[listechaine]}
+ReadUrlParam
+DOLIST=${URLParam[dolist]}
+LISTECHAINE=${URLParam[listechaine]}
 
 #check des paramètres
 
 
 #POUR DEBUG
-DOLIST=$1
-LISTECHAINE=$2
+#DOLIST=$1
+#LISTECHAINE=$2
 
 
 #Check des répertoires
-#CheckMandatoryDirectory "${CNF_DATADIR}/Apps"
-#CheckMandatoryDirectory "${CNF_DATADIR}/Apps/ProgTV"
-#CheckMandatoryDirectory "${CNF_DATADIR}/Apps/ProgTV/Data" 
-#CheckMandatoryDirectory "${CNF_DATADIR}/Tmp"
+CheckMandatoryDirectory "${CNF_DATADIR}/Apps"
+CheckMandatoryDirectory "${CNF_DATADIR}/Apps/ProgTV"
+CheckMandatoryDirectory "${CNF_DATADIR}/Apps/ProgTV/Data" 
+CheckMandatoryDirectory "${CNF_DATADIR}/Tmp"
 
 
 #recuperation du flux xml
@@ -68,26 +68,27 @@ function ttsProg
 	TTS="$1"",""$2"
 	VOICE="margaux22k"
 	NO_CACHE=0
-	RAW_VOICE=margaux
+	RAW_VOICE="margaux"
 	MUTE=0
-	#if [ ! -e "$CNF_DATADIR/Run/karotz.sleep" ]
-	#then
-		echo "AcapelaTTS $TTS $VOICE $NO_CACHE $RAW_VOICE $MUTE"
-	#else
-		#DATA='{"return":"1","msg":"Unable to perform action, rabbit is sleeping."}'
-	#fi
+	if [ ! -e "${CNF_DATADIR}/Run/karotz.sleep" ]
+	then
+		AcapelaTTS "${TTS}" "${VOICE}" "${NO_CACHE}" "${RAW_VOICE}" "${MUTE}"
+	else
+		DATA='{"return":"1","msg":"Unable to perform action, rabbit is sleeping."}'
+	fi
 }
 
-#Log "[APPS][PROGTV]" "recuperation des programmes"
+Log "[APPS][PROGTV]" "recuperation des programmes"
 getProg
 
 if [[ "${DOLIST}" == "1" ]]
 then
-	#Log "[APPS][PROGTV]" "envoie liste chaine"
+	Log "[APPS][PROGTV]" "envoie liste chaine"
 	listeChaine
 else
+	Log "[APPS][PROGTV]" "TTS du programme"
 	getProgChaine
 	DATA="{ \"return\":\"0\"}"
 fi
 
-echo $DATA
+SendResponse "${DATA}"
