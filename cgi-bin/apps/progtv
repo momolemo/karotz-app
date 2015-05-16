@@ -30,7 +30,7 @@ LISTECHAINE=$2
 #CheckMandatoryDirectory "${CNF_DATADIR}/Apps"
 #CheckMandatoryDirectory "${CNF_DATADIR}/Apps/ProgTV"
 #CheckMandatoryDirectory "${CNF_DATADIR}/Apps/ProgTV/Data" 
-#CheckMandatoryDirectory "$CNF_DATADIR/Tmp"
+#CheckMandatoryDirectory "${CNF_DATADIR}/Tmp"
 
 
 #recuperation du flux xml
