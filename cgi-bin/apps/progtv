@@ -3,14 +3,14 @@
 #Pour creation declaration de la variable :
 #CNF_DATADIR="../.."
 
-XMLFILE="${CNF_DATADIR}/Apps/Progtv/Data/xmlfile.xml"
-URLXML="http://www.telez.fr/programmeTv/flux-rss"
-PROGFILE="${CNF_DATADIR}/Apps/Progtv/Data/progfile.txt"
-
 source /www/cgi-bin/setup.inc
 source /www/cgi-bin/url.inc
 source /www/cgi-bin/utils.inc
 source /www/cgi-bin/tts.inc
+
+XMLFILE="${CNF_DATADIR}/Apps/Progtv/Data/xmlfile.xml"
+URLXML="http://www.telez.fr/programmeTv/flux-rss"
+PROGFILE="${CNF_DATADIR}/Apps/Progtv/Data/progfile.txt"
 
 KillProcess SOUNDS
 
