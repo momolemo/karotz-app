@@ -1,7 +1,6 @@
 #!/bin/bash
 
-PROGDIR="/usr/www/cgi-bin/apps"
-PROGFILE="progtv"
-PROGURL="https://github.com/momolemo/karotz-app-TV/blob/master/cgi-bin/apps"
+PROGDIR="/usr/www/cgi-bin/apps/"
+PROGURL="https://github.com/momolemo/karotz-app-TV/blob/master/cgi-bin/apps/progtv"
 
-wget -q -O ${PROGDIR}/${PROGFILE} ${PROGURL}/PROGFILE >>/dev/null 2>>/dev/null
+wget -q -P ${PROGDIR} ${PROGURL} >>/dev/null 2>>/dev/null
