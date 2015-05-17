@@ -1,22 +1,21 @@
 #!/bin/bash
 
-#Pour creation declaration de la variable :
-#CNF_DATADIR="../.."
-
 source /www/cgi-bin/setup.inc
 source /www/cgi-bin/url.inc
 source /www/cgi-bin/utils.inc
 source /www/cgi-bin/tts.inc
 
-XMLFILE="${CNF_DATADIR}/Apps/Progtv/Data/xmlfile.xml"
+XMLFILE="${CNF_DATADIR}/Apps/ProgTV/Data/xmlfile.xml"
 URLXML="http://www.telez.fr/programmeTv/flux-rss"
-PROGFILE="${CNF_DATADIR}/Apps/Progtv/Data/progfile.txt"
+PROGFILE="${CNF_DATADIR}/Apps/ProgTV/Data/progfile.txt"
 
 KillProcess SOUNDS
 
 ReadUrlParam
 DOLIST=${URLParam[dolist]}
 LISTECHAINE=${URLParam[listechaine]}
+RAW_VOICE=${URLParam[voix]}
+NO_CACHE=${URLParam[cache]}
 
 #check des paramètres
 
@@ -24,7 +23,8 @@ LISTECHAINE=${URLParam[listechaine]}
 #POUR DEBUG
 #DOLIST=$1
 #LISTECHAINE=$2
-
+#RAW_VOICE=$3
+#NO_CACHE=$4
 
 #Check des répertoires
 CheckMandatoryDirectory "${CNF_DATADIR}/Apps"
@@ -38,7 +38,7 @@ function getProg
 {
 	wget -q -O ${XMLFILE} ${URLXML} >>/dev/null 2>>/dev/null
 
-	cat ${XMLFILE} | awk '/<item>/, /<\/item>/' | awk -F "<title><\!\[CDATA\[|\]\]></title>|<description><\!\[CDATA\[<div> |<br\/>" '$2 != "" && $1 ~ /.*<link>.*/ {print $2} $2 != "" && $1 !~ /.*<link>.*/ {print "#"$2}'> ${PROGFILE} 
+	cat ${XMLFILE} | awk '/<item>/, /<\/item>/' | awk -F "\[" '$3 != "" {print $3}' |awk -F "\]" '$1 !~ /^<div>/ {print "<div> #"$1"<br/>"} $1 ~ /^<div>/ {print $1}' | awk -F "<div> " '{print $2}' |awk -F "<br/>" '{print $1}'> ${PROGFILE} 
 }
 
 function listeChaine
@@ -58,21 +58,44 @@ function getProgChaine
 {
 	while read LIGNE
 	do
-		PROG=$(sed -n "/${LIGNE}/{n;p;}" ${PROGFILE})
-		ttsProg "${LIGNE}" "${PROG}"	
+		PROG=$(sed -n "/\<${LIGNE}\>/{n;p;}" ${PROGFILE})
+		if [[ "${TEXTE}" != "" ]]
+		then
+			TEXTE="${TEXTE}"", ,"
+		fi
+		TEXTE="${TEXTE}""${LIGNE}"",""${PROG}"
+		#ttsProg "${LIGNE}" "${PROG}"	
 	done <<< "$(echo ${LISTECHAINE} | sed 's/_/\n/g')"
+	ttsProg "${TEXTE}"
 }
 
 function ttsProg
 {
-	TTS="$1"",""$2"
-	VOICE="margaux22k"
-	NO_CACHE=0
-	RAW_VOICE="margaux"
+	TTS="$1"
+	TTS=$(UrlEncode "${TTS}")
+	if [[ "${RAW_VOICE}" == "" ]]
+	then
+		RAW_VOICE="margaux"
+	fi
+	VOICE=${RAW_VOICE}"22k"
+	if [[ "${NO_CACHE}" == "" ]]                                                                                                                                    
+        then                                                                                                                                                            
+                NO_CACHE=0                                                                                                                                      
+        fi   
 	MUTE=0
 	if [ ! -e "${CNF_DATADIR}/Run/karotz.sleep" ]
 	then
-		AcapelaTTS "${TTS}" "${VOICE}" "${NO_CACHE}" "${RAW_VOICE}" "${MUTE}"
+		MD5FILE=$(echo "$TTS""$VOICE" | md5sum | cut -d ' ' -f 1)		
+		if [ -e "$CNF_DATADIR/Tmp/${MD5FILE}.txt"  ] && [ "$NO_CACHE" == "0"  ]
+		then
+      			if [ "$MUTE" != "1" ]
+			then 
+        			Log "[TTS]"  "Playing sound ${MD5FILE}.mp3 from cache"
+        			PlaySound $CNF_DATADIR/Tmp/${MD5FILE}.mp3
+      			fi
+		else
+			AcapelaTTS "${TTS}" "${VOICE}" "${NO_CACHE}" "${RAW_VOICE}" "${MUTE}"
+		fi
 	else
 		DATA='{"return":"1","msg":"Unable to perform action, rabbit is sleeping."}'
 	fi
