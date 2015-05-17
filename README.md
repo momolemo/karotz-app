@@ -5,4 +5,4 @@
 
 Pour l'installaiton télécharger le fichier d'intallation correspondant à l'appli voulue sur le karotz.
 Placez le ou vous le souhaitez sur le karotz puis execter le :
-bash "<nom du script d'install>"
+bash "nom du script d'install"
