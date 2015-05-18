@@ -31,14 +31,14 @@ http://<ip_lapin>/cgi-bin/progtv?parametre=valeur
 
 Paramètre disponible :
 * dolist (0)
-** retourne la liste des chaine disponible (0 ou 1)
-*** exemple : `http://<ip_lapin>/cgi-bin/progtv?dolist=1`
+  * retourne la liste des chaine disponible (0 ou 1)
+    * exemple : `http://<ip_lapin>/cgi-bin/progtv?dolist=1`
 * listechaine (null)
-** liste des chaines dont on souhaite avoir le programme (liste séparé par des _)
-*** exemple : `http://<ip_lapin>/cgi-bin/progtv?listechaine=TF1_M6_FRANCE 2_FRANCE 3_W9`
+  * liste des chaines dont on souhaite avoir le programme (liste séparé par des _)
+    * exemple : `http://<ip_lapin>/cgi-bin/progtv?listechaine=TF1_M6_FRANCE 2_FRANCE 3_W9`
 * voix (margaux)
-** permet de changer la voix par defaut du tts
-*** exemple : `http://<ip_lapin>/cgi-bin/progtv?listechaine=TF1_M6_FRANCE 2_FRANCE 3_W9&voix=julie`
+  * permet de changer la voix par defaut du tts
+    * exemple : `http://<ip_lapin>/cgi-bin/progtv?listechaine=TF1_M6_FRANCE 2_FRANCE 3_W9&voix=julie`
 * nocache (0)
-** permet de ne pas mettre ne cache les textes
-*** exemple : `http://<ip_lapin>/cgi-bin/progtv?listechaine=TF1_M6_FRANCE 2_FRANCE 3_W9&nocache=1`
+  * permet de ne pas mettre ne cache les textes
+    * exemple : `http://<ip_lapin>/cgi-bin/progtv?listechaine=TF1_M6_FRANCE 2_FRANCE 3_W9&nocache=1`
