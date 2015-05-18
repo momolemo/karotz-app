@@ -1,0 +1,88 @@
+#!/bin/bash
+
+#set -x
+
+source /www/cgi-bin/setup.inc
+source /www/cgi-bin/url.inc
+source /www/cgi-bin/utils.inc
+source /www/cgi-bin/tts.inc
+
+#http://api.openweathermap.org/data/2.5/forecast/daily?q=palaiseau&mode=json&units=metric&lang=fr&cnt=1
+APIURL="http://api.openweathermap.org/data/2.5/forecast/daily?mode=json&units=metric&lang=fr&cnt=1"
+
+METEOFILE="${CNF_DATADIR}/Apps/Meteo/Data/meteo.txt"
+
+KillProcess SOUNDS
+
+ReadUrlParam
+VILLE=${URLParam[ville]}
+TYPEINFO=${URLParam[typeinfo]}
+DATE=${URLParam[date]}
+RAW_VOICE=${URLParam[voix]}
+NO_CACHE=${URLParam[nocache]}
+
+#Check des répertoires
+CheckMandatoryDirectory "${CNF_DATADIR}/Apps"
+CheckMandatoryDirectory "${CNF_DATADIR}/Apps/Meteo"
+CheckMandatoryDirectory "${CNF_DATADIR}/Apps/Meteo/Data" 
+CheckMandatoryDirectory "${CNF_DATADIR}/Tmp"
+
+#Check des parametres
+A FAIRE
+
+#############################
+# Declaration des fonctions
+#############################
+
+function ttsMeteo
+{
+	TTS="$1"
+	TTS=$(UrlEncode "${TTS}")
+	if [[ "${RAW_VOICE}" == "" ]]
+	then
+		RAW_VOICE="margaux"
+	fi
+	VOICE=${RAW_VOICE}"22k"
+	if [[ "${NO_CACHE}" == "" ]]
+	then
+		NO_CACHE=0
+	fi   
+	MUTE=0
+	if [ ! -e "${CNF_DATADIR}/Run/karotz.sleep" ]
+	then
+		MD5FILE=$(echo "$TTS""$VOICE" | md5sum | cut -d ' ' -f 1)		
+		if [ -e "$CNF_DATADIR/Tmp/${MD5FILE}.txt"  ] && [ "$NO_CACHE" == "0"  ]
+		then
+      			if [ "$MUTE" != "1" ]
+			then 
+        			Log "[TTS]"  "Playing sound ${MD5FILE}.mp3 from cache"
+        			PlaySound $CNF_DATADIR/Tmp/${MD5FILE}.mp3
+      			fi
+		else
+			AcapelaTTS "${TTS}" "${VOICE}" "${NO_CACHE}" "${RAW_VOICE}" "${MUTE}"
+		fi
+	else
+		DATA='{"return":"1","msg":"Unable to perform action, rabbit is sleeping."}'
+	fi
+}
+
+
+
+###################################
+# Programme principal 
+###################################
+
+URL=${APIURL}"&q="${VILLE}
+
+curl -s ${URL} > ${METEOFILE}
+
+METEO=$(cat ${METEOFILE} | awk -F "\"description\":\"" '{print $2}' |awk -F "\",\"" '{print $1}')
+TEMPERATURE=$(cat ${METEOFILE} | awk -F "\"day\":" '{print $2}' |awk -F ",\"" '{print $1}')
+
+METEOTTS=$(echo "Meteo du jour, ${METEO} avec une temperature de ${TEMPERATURE}")
+
+DATA="{ \"return\":\"0\"}"
+
+ttsMeteo "${METEOTTS}"
+
+SendResponse "${DATA}"
