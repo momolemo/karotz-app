@@ -17,7 +17,7 @@ ReadUrlParam
 DOLIST=${URLParam[dolist]}
 LISTECHAINE="${URLParam[listechaine]}"
 RAW_VOICE=${URLParam[voix]}
-NO_CACHE=${URLParam[cache]}
+NO_CACHE=${URLParam[nocache]}
 
 LISTECHAINE=$(echo "${LISTECHAINE}"|sed 's/+/ /g; s/%20/ /g')
 
