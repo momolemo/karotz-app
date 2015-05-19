@@ -42,3 +42,9 @@ Paramètre disponible :
 * nocache (0)
   * permet de ne pas mettre ne cache les textes
     * exemple : `http://<ip_lapin>/cgi-bin/progtv?listechaine=TF1_M6_FRANCE 2_FRANCE 3_W9&nocache=1`
+
+## Meteo
+### Description
+application pour openkarotz permettant de dicter la meteo du jours
+
+ATTENTION LE SCRIPT N'EST PAS ENCORE FONCTIONNEL
