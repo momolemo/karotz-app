@@ -30,6 +30,7 @@ http://<ip_lapin>/cgi-bin/progtv?parametre=valeur
 ```
 
 Paramètre disponible :
+Les paramètres sont tous facultatif, si aucun paramètre n'est préciser le programme tele pour les chaines préciser dans le script sera donné.
 * dolist (0)
   * retourne la liste des chaine disponible (0 ou 1)
     * exemple : `http://<ip_lapin>/cgi-bin/progtv?dolist=1`
